@@ -5,5 +5,5 @@ export type NavItem = {
 
 export type FeaturedProduct = {
   name: string;
-  price: string;
+  feature: string;
 };

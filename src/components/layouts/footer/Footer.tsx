@@ -3,7 +3,7 @@ export function Footer() {
     <footer id="footer" className="mt-8 border-t border-sky-200 bg-sky-950 text-sky-50">
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 px-4 py-10 sm:px-6 md:grid-cols-2 lg:grid-cols-3">
         <div>
-          <h3 className="text-lg font-bold">TB SEAFOOD</h3>
+          <h3 className="text-lg font-bold">TB</h3>
           <p className="mt-3 text-sm text-sky-100">
             Chuyên hải sản tươi sống, giao nhanh trong ngày
           </p>

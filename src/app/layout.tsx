@@ -1,9 +1,12 @@
 import "../styles/globals.scss";
+import { AppShell } from "@/components/layouts/AppShell";
 
 const RootLayout = ({ children }: Readonly<{ children: React.ReactNode}>) => {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }
