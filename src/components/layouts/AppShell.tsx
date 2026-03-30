@@ -5,10 +5,11 @@ import { usePathname } from "next/navigation";
 import { Header } from "@/components/layouts/header/Header";
 
 const navItems = [
-  { label: "Trang chu", href: "/" },
-  { label: "San pham", href: "/products" },
-  { label: "Gio hang", href: "/cart" },
-  { label: "Dang nhap", href: "/login" },
+  { label: "Home", href: "/" },
+  { label: "Skeleton", href: "/skeleton" },
+  { label: "Price Board", href: "/price-board" },
+  { label: "Tailwind", href: "/tailwind" },
+  { label: "Login", href: "/login" },
 ];
 
 const HIDE_HEADER_ROUTES = new Set(["/login"]);
