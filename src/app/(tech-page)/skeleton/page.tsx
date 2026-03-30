@@ -1,4 +1,4 @@
-import React from 'react'
+import HomePage from "@/features/Skeleton";
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -7,11 +7,7 @@ export const metadata: Metadata = {
 }
 
 const Skeleton = () => {
-  return (
-    <div>
-      Skeleton
-    </div>
-  )
+  return <HomePage />;
 }
 
 export default Skeleton

@@ -1,5 +1,7 @@
-import HomePage from "@/features/Home";
+import HomePage from "@/features/Skeleton";
 
 export default function ShopHomePage() {
-  return <HomePage />;
+  return (
+    <div>Home</div>
+  );
 }

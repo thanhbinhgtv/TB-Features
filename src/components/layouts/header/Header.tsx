@@ -1,6 +1,10 @@
 import Link from "next/link";
-import type { NavItem } from "@/features/Home/types/home.types";
 import styles from './Header.module.scss';
+
+export type NavItem = {
+  label: string;
+  href: string;
+};
 
 type SiteHeaderProps = {
   navItems: NavItem[];
