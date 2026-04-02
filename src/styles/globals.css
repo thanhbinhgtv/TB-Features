@@ -86,3 +86,7 @@
     letter-spacing: -0.02em;
   }
 }
+
+.test01 {
+  @apply mx-auto w-full max-w-6xl rounded-2xl border border-(--border-default) bg-(--surface-card) p-3 shadow-sm sm:p-4;
+}
