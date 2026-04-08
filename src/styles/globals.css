@@ -1,7 +1,5 @@
 @import "tailwindcss";
-/* @import "./theme/theme.css"; */
-@import "./theme/colors.css";
-@import "./theme/fonts.css";
+@import "./theme.css";
 
 :root,                        /* root thường là thẻ html, áp dụng ngay khi trang load, kể cả khi chưa có data-theme */
 :root[data-theme="light"] {   /* Áp dụng khi data-theme="light" */

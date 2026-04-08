@@ -10,6 +10,7 @@ const MARKET_OPEN_HOUR = 9
 const MARKET_CLOSE_HOUR = 15
 const STEP_MINUTES = 1
 
+// Hàm tạo dữ liệu giả lập cho biểu đồ, mô phỏng dao động giá và volume trong ngày
 const getIntradayData = () => {
   const sessionDate = new Date()
   sessionDate.setHours(MARKET_OPEN_HOUR, 0, 0, 0)
@@ -37,8 +38,10 @@ const getIntradayData = () => {
   return { priceData, volumeData }
 }
 
+// Sử dụng useMemo để tính toán dữ liệu một lần duy nhất khi component được mount
 const HighchartsComponent = () => {
   const { priceData, volumeData } = useMemo(() => getIntradayData(), [])
+  const referencePrice = priceData[0]?.[1] ?? 96 // Giá tham chiếu là giá mở cửa, nếu không có dữ liệu thì mặc định là 96
 
   const options = useMemo<Highcharts.Options>(
     () => ({
@@ -47,7 +50,8 @@ const HighchartsComponent = () => {
         borderColor: '#1f2a44',
         borderWidth: 1,
         borderRadius: 8,
-        height: 300,
+        width: 300,
+        height: 120,
         spacing: [10, 10, 10, 10],
       },
       title: {
@@ -77,7 +81,7 @@ const HighchartsComponent = () => {
         labels: {
           style: {
             color: '#9eb0d8',
-            fontSize: '12px',
+            fontSize: '10px',
           },
           formatter() {
             return Highcharts.dateFormat('%Hh', this.value as number)
@@ -102,6 +106,25 @@ const HighchartsComponent = () => {
               fontSize: '11px',
             },
           },
+          plotLines: [  // Đường tham chiếu
+            {
+              value: referencePrice,
+              color: '#fff',
+              width: 1,
+              dashStyle: 'ShortDash',
+              zIndex: 5,
+              label: {
+                text: 'Tham chiếu',
+                align: 'left',
+                x: 6,
+                y: -4,
+                style: {
+                  color: '#fff',
+                  fontSize: '10px',
+                },
+              },
+            },
+          ],
           opposite: true,
         },
         {
@@ -134,14 +157,23 @@ const HighchartsComponent = () => {
           },
         },
       },
-      series: [
+      series: [ // Line cho giá, Column cho volume
         {
           type: 'line',
-          name: 'Price',
+          name: 'VNINDEX',
           data: priceData,
           yAxis: 0,
-          color: '#22ff84',
-          lineWidth: 1.8,
+          zoneAxis: 'y',
+          zones: [ // Trên ref: xanh - dưới ref: đỏ
+            {
+              value: referencePrice,
+              color: '#ff4d4f',
+            },
+            {
+              color: '#22ff84',
+            },
+          ],
+          lineWidth: 1.2, // Line width đường giá
           marker: {
             enabled: false,
           },
@@ -164,11 +196,20 @@ const HighchartsComponent = () => {
         },
       ],
     }),
-    [priceData, volumeData],
+    [priceData, referencePrice, volumeData],
   )
 
   return (
-    <div style={{ width: '100%', maxWidth: 740 }}>
+    <div style={{ width: 300 }}>
+      <a
+        href="https://api.highcharts.com/highstock/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className='inline-block mb-2 text-[#8cb7ff] text-xs underline cursor-pointer'
+      >
+        Detail Charts
+      </a>
+
       <HighchartsReact
         highcharts={Highcharts}
         constructorType='stockChart'

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { loginWithEmail } from "@/services/auth.service";
 import { login, logout, useAuthStore } from "@/store/auth.store";
 
 export function useAuth() {
@@ -11,8 +10,10 @@ export function useAuth() {
   async function handleLogin(email: string, password: string) {
     setLoading(true);
     try {
-      const result = await loginWithEmail({ email, password });
-      login(result.email);
+      if (!email || !password) {
+        throw new Error("Email và mật khẩu là bắt buộc");
+      }
+      return Promise.resolve(login(email));
     } finally {
       setLoading(false);
     }

@@ -1,10 +1,9 @@
+import TailwindCSSComponent from '@/features/TailwindCSS'
 import React from 'react'
 
 const Tailwind = () => {
   return (
-    <div>
-      Tailwind
-    </div>
+    <TailwindCSSComponent />
   )
 }
 
