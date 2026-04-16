@@ -22,8 +22,9 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": [
+  "include": [ // Include all TypeScript files and declaration files
     "next-env.d.ts",
+    "**/*.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",

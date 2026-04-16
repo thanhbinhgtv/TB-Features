@@ -12,12 +12,16 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.11.2",
+    "ag-grid-community": "^35.2.1",
+    "ag-grid-react": "^35.2.1",
     "axios": "^1.15.0",
     "highcharts": "^12.5.0",
     "highcharts-react-official": "^3.2.3",
     "next": "16.1.7",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-redux": "^9.2.0",
     "sass": "^1.98.0"
   },
   "devDependencies": {

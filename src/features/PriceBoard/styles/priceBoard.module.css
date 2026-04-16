@@ -1,0 +1,117 @@
+.priceBoardRoot {
+  display: flex;
+  height: calc(100vh - 68px);
+  min-height: 520px;
+  flex-direction: column;
+  border: 1px solid var(--border-default);
+  background: var(--surface-page);
+  color: var(--text-primary);
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 12px;
+  align-items: center;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--surface-subtle);
+  padding: 6px 12px;
+}
+
+.search {
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-size: 13px;
+  padding: 8px 10px;
+  outline: none;
+}
+
+.search:focus {
+  border-color: var(--focus-ring);
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+}
+
+.tab {
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 6px 8px;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  background: var(--surface-muted);
+}
+
+.tabActive {
+  background: var(--surface-accent);
+  color: var(--text-on-accent);
+}
+
+.table {
+  width: 100%;
+  flex: 1;
+  border-top: 1px solid var(--border-default);
+}
+
+.table :global(.ag-header-cell),
+.table :global(.ag-header-group-cell) {
+  font-weight: 600;
+}
+
+.table :global(.ag-header-cell-label),
+.table :global(.ag-header-group-cell-label) {
+  justify-content: center;
+}
+
+.table :global(.ag-cell) {
+  text-align: center;
+}
+
+.cellNumber {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.cellSymbol {
+  color: var(--market-price-up);
+  font-weight: 700;
+  text-align: center;
+}
+
+.cellCeiling {
+  color: var(--market-price-ceiling);
+}
+
+.cellFloor {
+  color: var(--market-price-floor);
+}
+
+.cellRef {
+  color: var(--market-price-reference);
+}
+
+.cellUp {
+  color: var(--market-price-up);
+}
+
+.cellDown {
+  color: var(--market-price-down);
+}
+
+@media (max-width: 1024px) {
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+}

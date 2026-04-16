@@ -8,26 +8,38 @@
   --background: var(--color-surface-50);
   --foreground: var(--color-surface-950);
 
+  /* Surface Colors */
   --surface-page: var(--color-surface-50);
   --surface-subtle: var(--color-surface-100);
   --surface-muted: var(--color-surface-200);
   --surface-card: #ffffff;
   --surface-accent: var(--color-brand-100);
 
+  /* Text Colors */
   --text-primary: var(--color-surface-950);
   --text-secondary: var(--color-surface-700);
   --text-muted: var(--color-surface-600);
   --text-accent: var(--color-brand-800);
   --text-on-accent: #ffffff;
 
+  /* Border Colors */
   --border-default: var(--color-surface-200);
   --border-strong: var(--color-surface-300);
   --focus-ring: var(--color-brand-400);
 
+  /* Button Colors */
   --button-primary-bg: var(--color-surface-950);
   --button-primary-bg-hover: var(--color-surface-900);
   --error: #dc2626;
 
+  /* Market Price Colors */
+  --market-price-up: #00c853;
+  --market-price-down: #ff4a58;
+  --market-price-reference: #ffe84a;
+  --market-price-ceiling: #ff49ff;
+  --market-price-floor: #40bbff;
+
+  /* Gradient Colors */
   --gradient-card-from: var(--color-brand-100);
   --gradient-card-to: var(--color-surface-200);
 }
@@ -38,30 +50,43 @@
   --background: var(--color-surface-950);
   --foreground: var(--color-surface-50);
 
+  /* Surface Colors */
   --surface-page: var(--color-surface-950);
   --surface-subtle: var(--color-surface-900);
   --surface-muted: var(--color-surface-800);
   --surface-card: var(--color-surface-900);
   --surface-accent: color-mix(in srgb, var(--color-brand-700) 42%, var(--color-surface-950));
 
+  /* Text Colors */
   --text-primary: var(--color-surface-50);
   --text-secondary: var(--color-surface-200);
   --text-muted: var(--color-surface-300);
   --text-accent: var(--color-brand-300);
   --text-on-accent: var(--color-surface-50);
 
+  /* Border Colors */
   --border-default: var(--color-surface-800);
   --border-strong: var(--color-surface-700);
   --focus-ring: var(--color-brand-400);
 
+  /* Button Colors */
   --button-primary-bg: var(--color-brand-500);
   --button-primary-bg-hover: var(--color-brand-600);
   --error: #f87171;
 
+  /* Market Price Colors */
+  --market-price-up: #22ff84;
+  --market-price-down: #ff6b76;
+  --market-price-reference: #ffe84a;
+  --market-price-ceiling: #ff7bff;
+  --market-price-floor: #56c8ff;
+
+  /* Gradient Colors */
   --gradient-card-from: color-mix(in srgb, var(--color-brand-700) 40%, var(--color-surface-950));
   --gradient-card-to: var(--color-surface-800);
 }
 
+/* Base Styles */
 @layer base {
   body {
     margin: 0;

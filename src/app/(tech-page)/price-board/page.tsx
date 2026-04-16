@@ -1,11 +1,7 @@
-import React from 'react'
+import PriceBoardComponent from "@/features/PriceBoard";
 
 const PriceBoard = () => {
-  return (
-    <div>
-      PriceBoard
-    </div>
-  )
-}
+  return <PriceBoardComponent />;
+};
 
-export default PriceBoard
+export default PriceBoard;
