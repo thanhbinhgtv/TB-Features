@@ -5,7 +5,7 @@ import type {
   ValueFormatterParams,
 } from "ag-grid-community";
 import type { MarketRow } from "../types/priceBoard.types";
-import styles from "../styles/priceBoard.module.css";
+import styles from "../styles/priceBoard.module.scss";
 
 const formatPrice = ({ value }: ValueFormatterParams<MarketRow, number>) => {
   return Number(value ?? 0).toFixed(2);

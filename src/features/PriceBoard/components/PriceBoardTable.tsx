@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { themeQuartz, type GridOptions } from "ag-grid-community";
 import AgGridTable from "@/components/common/ag-grid-table/AgGridTable";
-import styles from "../styles/priceBoard.module.css";
+import styles from "../styles/priceBoard.module.scss";
 import { priceBoardColumnDefs } from "../constants/priceBoard.columns";
 import { selectVisibleRows } from "../store/priceBoard.selectors";
 import { usePriceBoardSelector } from "../store/hooks";

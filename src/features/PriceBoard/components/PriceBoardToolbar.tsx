@@ -2,7 +2,7 @@
 
 import { usePriceBoardDispatch, usePriceBoardSelector } from "../store/hooks";
 import { setActiveTab, setSearchTerm } from "../store/priceBoard.slice";
-import styles from "../styles/priceBoard.module.css";
+import styles from "../styles/priceBoard.module.scss";
 
 const tabs = [
   "Danh muc cua toi",
