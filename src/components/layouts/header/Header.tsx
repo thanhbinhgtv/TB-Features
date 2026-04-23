@@ -15,6 +15,7 @@ export function Header() {
     { label: "Trading View", href: "/trading-view" },
     { label: "Highcharts", href: "/highcharts" },
     { label: "AG Grid", href: "/ag-grid" },
+    { label: "Tampermonkey", href: "/tampermonkey" },
     { label: "Login", href: "/login" },
   ];
 

@@ -8,28 +8,28 @@ type IntradayPoint = [number, number];
 
 const MARKET_OPEN_HOUR = 9;
 const MARKET_CLOSE_HOUR = 15;
-const STEP_MINUTES = 1;
+const STEP_MINUTES = 1; // Khoảng thời gian giữa các điểm dữ liệu (1 phút)
 
 // Hàm tạo dữ liệu giả lập cho biểu đồ, mô phỏng dao động giá và volume trong ngày
 const getIntradayData = () => {
   const sessionDate = new Date();
   sessionDate.setHours(MARKET_OPEN_HOUR, 0, 0, 0);
 
-  const totalPoints =
-    ((MARKET_CLOSE_HOUR - MARKET_OPEN_HOUR) * 60) / STEP_MINUTES;
+  const totalPoints = ((MARKET_CLOSE_HOUR - MARKET_OPEN_HOUR) * 60) / STEP_MINUTES; // Tổng số điểm dữ liệu trong phiên giao dịch (6 giờ * 60 phút / 1 phút mỗi điểm)
   const priceData: IntradayPoint[] = [];
   const volumeData: IntradayPoint[] = [];
 
-  let currentPrice = 250.4;
+  let currentPrice = 96; // Giá khởi điểm, có thể điều chỉnh để tạo dao động khác nhau
 
   for (let index = 0; index <= totalPoints; index += 1) {
-    const timestamp = sessionDate.getTime() + index * STEP_MINUTES * 60 * 1000;
+    console.log('totalPoints :>> ', totalPoints);
+    const timestamp = sessionDate.getTime() + index * STEP_MINUTES * 60 * 1000;  // Tính timestamp cho mỗi điểm dữ liệu, cách nhau 1 phút
 
-    const swing = Math.sin(index / 14) * 0.22;
-    const noise = (Math.random() - 0.5) * 0.35;
-    currentPrice = Math.max(248, currentPrice + swing + noise);
+    const swing = Math.sin(index / 14) * 0.12;  // Tạo dao động giá theo hàm sin để có xu hướng tăng giảm tự nhiên
+    const noise = (Math.random() - 0.5) * 0.25; // Thêm nhiễu ngẫu nhiên để làm cho dữ liệu trông thực tế hơn
+    currentPrice = Math.max(90, currentPrice + swing + noise); // Cập nhật giá hiện tại, đảm bảo không giảm quá thấp (ví dụ: 248)
 
-    const volumeBase = 4_500 + Math.abs(Math.sin(index / 9)) * 6_000;
+    const volumeBase = 4_500 + Math.abs(Math.sin(index / 9)) * 6_000; // Tạo giá trị cơ bản cho volume, có xu hướng tăng giảm theo hàm sin để mô phỏng sự biến động của khối lượng giao dịch
     const volumeNoise = Math.random() * 2_000;
 
     priceData.push([timestamp, Number(currentPrice.toFixed(2))]);
@@ -39,10 +39,9 @@ const getIntradayData = () => {
   return { priceData, volumeData };
 };
 
-// Sử dụng useMemo để tính toán dữ liệu một lần duy nhất khi component được mount
 const HighchartsComponent = () => {
-  const { priceData, volumeData } = useMemo(() => getIntradayData(), []);
-  const referencePrice = priceData[0]?.[1] ?? 96;               // Giá tham chiếu là giá mở cửa, nếu không có dữ liệu thì mặc định là 96
+  const { priceData, volumeData } = useMemo(() => getIntradayData(), []); // Tạo dữ liệu một lần khi component mount
+  const referencePrice = 96;                  // Giá tham chiếu là giá mở cửa, nếu không có dữ liệu thì mặc định là 96
   const sessionStartTime = priceData[0]?.[0];                   // Thời gian bắt đầu phiên là timestamp của điểm dữ liệu đầu tiên
   const sessionEndTime = priceData[priceData.length - 1]?.[0];  // Thời gian kết thúc phiên là timestamp của điểm dữ liệu cuối cùng
   const volumeSeriesData = useMemo(
