@@ -1,76 +1,131 @@
 "use client";
 
 import InputText from "@/components/common/InputText";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 
 const tabs = [
-  { id: "tab-buy", label: "BUY" },
-  { id: "tab-sell", label: "SELL" },
+  { id: "buy-tab", label: "BUY" },
+  { id: "sell-tab", label: "SELL" },
 ] as const;
 
 type TabId = (typeof tabs)[number]["id"];
 
-type SampleProfileOption = {
+type SymbolOption = {
   id: string;
   label: string;
   userId: number;
   note?: string;
 };
 
+type PaymentMethodOption = {
+  value: number;
+  label: string;
+};
+
+type contracustOption = {
+  value: string;
+  label: string;
+};
+
 type ApiUserResponse = {
-  firstName?: string;
-  lastName?: string;
+  odrOrderVol?: string;
+  odrOrderPrice?: string;
   address?: {
     country?: string;
   };
 };
 
-const sampleProfileOptions: SampleProfileOption[] = [
-  { id: "sample-1", label: "Sample User #1", userId: 1, note: "Auto fill data for BUY tab" },
-  { id: "sample-2", label: "Sample User #2", userId: 2, note: "Auto fill data for SELL tab" },
-  { id: "sample-3", label: "Sample User #3", userId: 3, note: "Another sample profile" },
+const SymbolOptions: SymbolOption[] = [
+  {
+    id: "symbol-1",
+    label: "TNF32101",
+    userId: 1,
+    note: "Auto fill data for BUY tab",
+  },
+  {
+    id: "symbol-2",
+    label: "TNF32102",
+    userId: 2,
+    note: "Auto fill data for SELL tab",
+  },
+  {
+    id: "symbol-3",
+    label: "TNF32103",
+    userId: 3,
+    note: "Another sample profile",
+  },
 ];
 
-function mapCountryToOption(country?: string): "" | "vn" | "us" {
-  if (!country) {
-    return "";
-  }
+const paymentMethodOptions: PaymentMethodOption[] = [
+  {
+    value: 1,
+    label: "Thanh toán ngay",
+  },
+  {
+    value: 2,
+    label: "Thanh toán cuối ngày",
+  },
+  {
+    value: 3,
+    label: "Thanh toán tương lai",
+  },
+];
 
-  const normalized = country.toLowerCase();
-
-  if (normalized.includes("viet")) {
-    return "vn";
-  }
-
-  if (normalized.includes("united states") || normalized.includes("usa")) {
-    return "us";
-  }
-
-  return "";
-}
+const contracustOptions: contracustOption[] = [
+  {
+    value: "001",
+    label: "Cty 001",
+  },
+  {
+    value: "088",
+    label: "Cty 088",
+  },
+  {
+    value: "090",
+    label: "Cty 090",
+  },
+];
 
 const TampermonkeyComp = () => {
-  const [activeTab, setActiveTab] = useState<TabId>("tab-buy");
+  const [activeTab, setActiveTab] = useState<TabId>("buy-tab");
   const [selectedSampleId, setSelectedSampleId] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [country, setCountry] = useState("");
-  const [dropdownDisplay, setDropdownDisplay] = useState<"none" | "block">("none");
+  const [odrOrderVol, setOdrOrderVol] = useState("");
+  const [odrOrderPrice, setOdrOrderPrice] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<number | "">("");
+  const [symbolDropdownDisplay, setSymbolDropdownDisplay] = useState<"none" | "block">(
+    "none",
+  );
+  const [paymentMethodDropdownDisplay, setPaymentMethodDropdownDisplay] = useState<"none" | "block">(
+    "none",
+  );
   const [searchTerm, setSearchTerm] = useState("");
+  const [paymentMethodSearchTerm, setPaymentMethodSearchTerm] = useState("");
   const [isFetchingSample, setIsFetchingSample] = useState(false);
   const [fetchError, setFetchError] = useState("");
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  const selectedSample = sampleProfileOptions.find((option) => option.id === selectedSampleId);
+  const [odrSendAccount, setOdrSendAccount] = useState("088");
 
+  const [odrRevAccount, setOdrRevAccount] = useState("088");
+
+  const [contracust, setContracust] = useState("");
+  const [contracustDropdownDisplay, setContracustDropdownDisplay] = useState<"none" | "block">(
+    "none",
+  );
+  const [contracustSearchTerm, setContracustSearchTerm] = useState("");
+
+  const selectedSample = SymbolOptions.find(
+    (option) => option.id === selectedSampleId,
+  );
+
+  // Filter options based on search term
   const filteredOptions = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
 
     if (!normalizedSearch) {
-      return sampleProfileOptions;
+      return SymbolOptions;
     }
 
-    return sampleProfileOptions.filter((option) => {
+    return SymbolOptions.filter((option) => {
       return (
         option.label.toLowerCase().includes(normalizedSearch) ||
         (option.note?.toLowerCase().includes(normalizedSearch) ?? false)
@@ -78,37 +133,77 @@ const TampermonkeyComp = () => {
     });
   }, [searchTerm]);
 
-  const handleSelectProfile = async (option: SampleProfileOption) => {
+  const filteredPaymentMethodOptions = useMemo(() => {
+    const normalizedSearch = paymentMethodSearchTerm.trim().toLowerCase();
+
+    if (!normalizedSearch) {
+      return paymentMethodOptions;
+    }
+
+    return paymentMethodOptions.filter((option) => {
+      return option.label.toLowerCase().includes(normalizedSearch);
+    });
+  }, [paymentMethodSearchTerm]);
+
+  const filteredContracustOptions = useMemo(() => {
+    const normalizedSearch = contracustSearchTerm.trim().toLowerCase();
+
+    if (!normalizedSearch) {
+      return contracustOptions;
+    }
+
+    return contracustOptions.filter((option) => {
+      return option.label.toLowerCase().includes(normalizedSearch);
+    });
+  }, [contracustSearchTerm]);
+
+  const handleSelectProfile = async (option: SymbolOption) => {
     setSelectedSampleId(option.id);
-    setDropdownDisplay("none");
+    setSymbolDropdownDisplay("none");
     setSearchTerm("");
     setFetchError("");
 
     try {
       setIsFetchingSample(true);
-      const response = await fetch(`https://dummyjson.com/users/${option.userId}`);
+      const response = await fetch(
+        `https://dummyjson.com/users/${option.userId}`,
+      );
 
       if (!response.ok) {
         throw new Error("Cannot fetch sample user data");
       }
 
       const userData: ApiUserResponse = await response.json();
-      setFirstName(userData.firstName ?? "");
-      setCountry(mapCountryToOption(userData.address?.country));
+      // setOdrOrderVol(userData.odrOrderVol ?? "");
+      // setOdrOrderPrice(userData.odrOrderPrice ?? "");
     } catch (error) {
-      setFetchError(error instanceof Error ? error.message : "Unknown fetch error");
+      setFetchError(
+        error instanceof Error ? error.message : "Unknown fetch error",
+      );
     } finally {
       setIsFetchingSample(false);
     }
   };
 
+  const handleSelectPaymentMethod = (option: PaymentMethodOption) => {
+    setPaymentMethod(option.value);
+    setPaymentMethodDropdownDisplay("none");
+    setPaymentMethodSearchTerm("");
+  };
+
+  const handleSelectContracust = (option: contracustOption) => {
+    setContracust(option.value);
+    setContracustDropdownDisplay("none");
+    setContracustSearchTerm("");
+  };
+
   return (
     <main className="min-h-screen bg-(--surface-page) px-4 py-10 text-(--text-primary)">
       <div className="mx-auto w-full max-w-md rounded-xl border border-(--border-default) bg-(--surface-card) p-5 shadow-sm">
-        <div className="mb-4 grid grid-cols-2 rounded-lg bg-(--surface-subtle) p-1 gap-1">
+        <div className="mb-4 grid grid-cols-2 gap-1 rounded-lg bg-(--surface-subtle) p-1">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
-            const isBuyTab = tab.id === "tab-buy";
+            const isBuyTab = tab.id === "buy-tab";
             const buyTabClassName = isActive
               ? "bg-green-500 text-emerald-100 shadow-sm"
               : "text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700";
@@ -133,105 +228,277 @@ const TampermonkeyComp = () => {
         </div>
 
         <form action="" className="space-y-4">
-          <p className="text-sm text-(--text-muted)">Typing : Binh|Thanh|us|sell|Sample User #2</p>
+          <p className="text-sm text-(--text-muted) wrap-break-word whitespace-normal">
+            Typing: side=BUYI&code=TNF32102&paymentmethod=GN&vol=19&price=14230137&acctbuy=088C030474&contracust=088&contraacct=088C098351
+          </p>
 
+          {/* Symbol */}
           <div>
-            <label htmlFor="sample-profile" className="mb-2 block text-sm font-medium">
-              Sample profile
-            </label>
-            <div ref={dropdownRef} className="relative">
+            <label className="mb-2 block text-sm font-medium">Symbol</label>
+            <div className="relative">
               <button
-                id="sample-profile"
+                id="odr-symbol"
                 type="button"
                 aria-haspopup="listbox"
-                aria-expanded={dropdownDisplay === "block"}
-                onClick={() => setDropdownDisplay((current) => (current === "none" ? "block" : "none"))}
-                className="flex w-full items-center justify-between rounded-lg border border-(--border-strong) bg-(--surface-page) px-3 py-2 text-left text-sm text-(--text-primary) outline-none transition-colors focus-visible:ring-2 focus-visible:ring-(--focus-ring)"
+                onClick={() =>
+                  setSymbolDropdownDisplay((current) =>
+                    current === "none" ? "block" : "none",
+                  )
+                }
+                className="flex w-full items-center justify-between rounded-lg border border-(--border-strong) bg-(--surface-page) px-3 py-2 text-left text-sm text-(--text-primary) transition-colors outline-none focus-visible:ring-2 focus-visible:ring-(--focus-ring)"
               >
-                <span className={selectedSample ? "truncate" : "text-(--text-muted)"}>
-                  {selectedSample ? selectedSample.label : "Choose one profile to auto-fill"}
+                <span
+                  className={
+                    selectedSample ? "truncate" : "text-(--text-muted)"
+                  }
+                >
+                  {selectedSample
+                    ? selectedSample.label
+                    : "Choose one profile to auto-fill"}
                 </span>
                 <span className="ml-3 text-(--text-muted)">▾</span>
               </button>
 
               <div
-                style={{ display: dropdownDisplay }}
-                className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 rounded-xl border border-(--border-default) bg-(--surface-card) p-3 shadow-lg"
+                style={{ display: symbolDropdownDisplay }}
+                className="absolute top-[calc(100%+0.5rem)] right-0 left-0 z-20 rounded-xl border border-(--border-default) bg-(--surface-card) p-3 shadow-lg"
               >
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      value={searchTerm}
-                      onChange={(event) => setSearchTerm(event.target.value)}
-                      placeholder="Search profile..."
-                      className="w-full rounded-lg border border-(--border-strong) bg-(--surface-page) px-3 py-2 text-sm text-(--text-primary) outline-none focus-visible:ring-2 focus-visible:ring-(--focus-ring)"
-                    />
-                  </div>
-
-                  <div className="max-h-60 overflow-auto">
-                    {filteredOptions.length > 0 ? (
-                      <ul role="listbox" className="space-y-1">
-                        {filteredOptions.map((option) => (
-                          <li key={option.id}>
-                            <label className="flex w-full cursor-pointer items-start gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-(--surface-subtle)">
-                              <input
-                                type="radio"
-                                name="sampleProfileOption"
-                                value={option.id}
-                                checked={selectedSampleId === option.id}
-                                onChange={() => handleSelectProfile(option)}
-                                className="mt-1"
-                              />
-                              <span className="flex flex-col">
-                                <span className="text-sm font-medium text-(--text-primary)">{option.label}</span>
-                              </span>
-                            </label>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="px-3 py-2 text-sm text-(--text-muted)">No profile found</p>
-                    )}
-                  </div>
-
-                  {isFetchingSample ? <p className="mt-3 text-xs text-(--text-muted)">Loading profile...</p> : null}
-                  {fetchError ? <p className="mt-3 text-xs text-(--error)">{fetchError}</p> : null}
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    placeholder="Search profile..."
+                    className="w-full rounded-lg border border-(--border-strong) bg-(--surface-page) px-3 py-2 text-sm text-(--text-primary) outline-none focus-visible:ring-2 focus-visible:ring-(--focus-ring)"
+                  />
                 </div>
+
+                <div className="max-h-60 overflow-auto">
+                  {filteredOptions.length > 0 ? (
+                    <ul role="listbox" className="space-y-1">
+                      {filteredOptions.map((option) => (
+                        <li key={option.id}>
+                          <label className="flex w-full cursor-pointer items-start gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-(--surface-subtle)">
+                            <input
+                              type="radio"
+                              name="sampleProfileOption"
+                              value={option.id}
+                              checked={selectedSampleId === option.id}
+                              onChange={() => handleSelectProfile(option)}
+                              className="mt-1"
+                            />
+                            {option.label}
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="px-3 py-2 text-sm text-(--text-muted)">
+                      No profile found
+                    </p>
+                  )}
+                </div>
+
+                {isFetchingSample ? (
+                  <p className="mt-3 text-xs text-(--text-muted)">
+                    Loading profile...
+                  </p>
+                ) : null}
+                {fetchError ? (
+                  <p className="mt-3 text-xs text-(--error)">{fetchError}</p>
+                ) : null}
+              </div>
             </div>
           </div>
 
+          {/* Price */}
           <div>
-            <label htmlFor="fname" className="mb-2 block text-sm font-medium">
-              First name:
-            </label>
-            <InputText id="fname" name="fname" value={firstName} onChange={(event) => setFirstName(event.target.value)} />
-          </div>
-
-          <div>
-            <label htmlFor="lname" className="mb-2 block text-sm font-medium">
-              Last name:
-            </label>
-            <InputText id="lname" name="lname" value={lastName} onChange={(event) => setLastName(event.target.value)} />
-          </div>
-
-          <div>
-            <label htmlFor="country" className="mb-2 block text-sm font-medium">
-              Country
-            </label>
-            <select
-              id="country"
-              name="country"
-              value={country}
-              onChange={(event) => setCountry(event.target.value)}
-              className="w-full rounded-lg border border-(--border-strong) bg-(--surface-page) px-3 py-2 text-sm text-(--text-primary) outline-none focus-visible:ring-2 focus-visible:ring-(--focus-ring)"
+            <label
+              htmlFor="odr-order-qtty"
+              className="mb-2 block text-sm font-medium"
             >
-              <option value="">Select a country</option>
-              <option value="vn">Việt Nam</option>
-              <option value="us">United States</option>
-            </select>
+              Price:
+            </label>
+            <InputText
+              id="odr-order-qtty"
+              value={odrOrderVol}
+              onChange={(event) => setOdrOrderVol(event.target.value)}
+            />
           </div>
 
-          
+          {/* Quantity */}
+          <div>
+            <label
+              htmlFor="odr-order-price"
+              className="mb-2 block text-sm font-medium"
+            >
+              Quantity:
+            </label>
+            <InputText
+              id="odr-order-price"
+              value={odrOrderPrice}
+              onChange={(event) => setOdrOrderPrice(event.target.value)}
+            />
+          </div>
+
+          {/* Payment Method */}
+          <div>
+            <label className="mb-2 block text-sm font-medium">Payment Method</label>
+            <div className="relative">
+              <button
+                id="odr-sett-method"
+                type="button"
+                aria-haspopup="listbox"
+                aria-expanded={paymentMethodDropdownDisplay === "block"}
+                onClick={() =>
+                  setPaymentMethodDropdownDisplay((current) =>
+                    current === "none" ? "block" : "none",
+                  )
+                }
+                className="flex w-full items-center justify-between rounded-lg border border-(--border-strong) bg-(--surface-page) px-3 py-2 text-left text-sm text-(--text-primary) transition-colors outline-none focus-visible:ring-2 focus-visible:ring-(--focus-ring)"
+              >
+                <span className={paymentMethod ? "truncate" : "text-(--text-muted)"}>
+                  {paymentMethod
+                    ? paymentMethodOptions.find((option) => option.value === paymentMethod)?.label ?? "Choose payment method"
+                    : "Choose payment method"}
+                </span>
+                <span className="ml-3 text-(--text-muted)">▾</span>
+              </button>
+
+              <div
+                style={{ display: paymentMethodDropdownDisplay }}
+                className="absolute top-[calc(100%+0.5rem)] right-0 left-0 z-20 rounded-xl border border-(--border-default) bg-(--surface-card) p-3 shadow-lg"
+              >
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    value={paymentMethodSearchTerm}
+                    onChange={(event) => setPaymentMethodSearchTerm(event.target.value)}
+                    placeholder="Search payment method..."
+                    className="w-full rounded-lg border border-(--border-strong) bg-(--surface-page) px-3 py-2 text-sm text-(--text-primary) outline-none focus-visible:ring-2 focus-visible:ring-(--focus-ring)"
+                  />
+                </div>
+
+                <div className="max-h-60 overflow-auto">
+                  {filteredPaymentMethodOptions.length > 0 ? (
+                    <ul role="listbox" className="space-y-1">
+                      {filteredPaymentMethodOptions.map((option) => (
+                        <li key={option.value}>
+                          <label className="flex w-full cursor-pointer items-start gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-(--surface-subtle)">
+                            <input
+                              type="radio"
+                              value={option.value}
+                              checked={paymentMethod === option.value}
+                              onChange={() => handleSelectPaymentMethod(option)}
+                              className="mt-1"
+                            />
+                            {option.label}
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="px-3 py-2 text-sm text-(--text-muted)">No payment method found</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Order Send Account */}
+          <div>
+            <label
+              htmlFor="odr-send-account"
+              className="mb-2 block text-sm font-medium"
+            >
+              STK đặt lệnh:
+            </label>
+            <InputText
+              id="odr-send-account"
+              value={odrSendAccount}
+              onChange={(event) => setOdrSendAccount(event.target.value)}
+            />
+          </div>
+
+          {/* contracust - Thành viên đối ứng */}
+          <div>
+            <label className="mb-2 block text-sm font-medium">Thành viên đối ứng</label>
+            <div className="relative">
+              <button
+                id="odr-contracust"
+                type="button"
+                aria-haspopup="listbox"
+                aria-expanded={contracustDropdownDisplay === "block"}
+                onClick={() =>
+                  setContracustDropdownDisplay((current) =>
+                    current === "none" ? "block" : "none",
+                  )
+                }
+                className="flex w-full items-center justify-between rounded-lg border border-(--border-strong) bg-(--surface-page) px-3 py-2 text-left text-sm text-(--text-primary) transition-colors outline-none focus-visible:ring-2 focus-visible:ring-(--focus-ring)"
+              >
+                <span className={contracust ? "truncate" : "text-(--text-muted)"}>
+                  {contracust
+                    ? contracustOptions.find((option) => option.value === contracust)?.label ?? "Choose member"
+                    : "Choose member"}
+                </span>
+                <span className="ml-3 text-(--text-muted)">▾</span>
+              </button>
+
+              <div
+                style={{ display: contracustDropdownDisplay }}
+                className="absolute top-[calc(100%+0.5rem)] right-0 left-0 z-20 rounded-xl border border-(--border-default) bg-(--surface-card) p-3 shadow-lg"
+              >
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    value={contracustSearchTerm}
+                    onChange={(event) => setContracustSearchTerm(event.target.value)}
+                    placeholder="Search member..."
+                    className="w-full rounded-lg border border-(--border-strong) bg-(--surface-page) px-3 py-2 text-sm text-(--text-primary) outline-none focus-visible:ring-2 focus-visible:ring-(--focus-ring)"
+                  />
+                </div>
+
+                <div className="max-h-60 overflow-auto">
+                  {filteredContracustOptions.length > 0 ? (
+                    <ul role="listbox" className="space-y-1">
+                      {filteredContracustOptions.map((option) => (
+                        <li key={option.value}>
+                          <label className="flex w-full cursor-pointer items-start gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-(--surface-subtle)">
+                            <input
+                              type="radio"
+                              name="contracustOption"
+                              value={option.value}
+                              checked={contracust === option.value}
+                              onChange={() => handleSelectContracust(option)}
+                              className="mt-1"
+                            />
+                            {option.label}
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="px-3 py-2 text-sm text-(--text-muted)">No member found</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+           {/* Order Send Account */}
+          <div>
+            <label
+              htmlFor="odr-rev-account"
+              className="mb-2 block text-sm font-medium"
+            >
+              STK đối ứng:
+            </label>
+            <InputText
+              id="odr-rev-account"
+              value={odrRevAccount}
+              onChange={(event) => setOdrRevAccount(event.target.value)}
+            />
+          </div>
 
           <button
             type="submit"
