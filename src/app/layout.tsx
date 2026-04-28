@@ -1,5 +1,6 @@
 import "../styles/globals.css";
 import { AppShell } from "@/components/layouts/AppShell";
+import { AppToaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import type { Metadata } from "next";
 
@@ -36,6 +37,7 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
       <body>
         <ThemeProvider>
           <AppShell>{children}</AppShell>
+          <AppToaster />
         </ThemeProvider>
       </body>
     </html>
