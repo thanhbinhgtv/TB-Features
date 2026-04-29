@@ -262,7 +262,9 @@
       setValueInput(acct, acctbuy);
     }
     if (revAcct && contraacct) {
-      setValueInput(revAcct, contraacct);
+      setTimeout(() => {
+        setValueInput(revAcct, contraacct);
+      }, 500);
     }
   }
 
