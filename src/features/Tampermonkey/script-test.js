@@ -207,7 +207,7 @@
       return;
     }
 
-    let tab = "", SymbolText = "", odrOrderQtty = "", odrOrderPrice = "", paymentMethod = "", acctbuy = "", contracust = "", contraacct = "";
+    let tab = "", SymbolText = "", odrOrderQtty = "", odrOrderPrice = "", paymentMethod = "", acctbuy = "", acctsell = "", contracust = "", contraacct = "";
 
     const parsed = parseKeyValueString(cleaned);
     tab = parsed.side || "";
@@ -216,16 +216,19 @@
     odrOrderQtty = parsed.vol || "";
     odrOrderPrice = parsed.price || "";
     acctbuy = parsed.acctbuy || "";
+    acctsell = parsed.acctsell || "";
     contracust = parsed.contracust || "";
     contraacct = parsed.contraacct || "";
 
+    const normalizedTab = String(tab || "").trim().toLowerCase();
+    const orderAccount = normalizedTab === "buyi" ? acctbuy : acctsell;
+
     // Validate parsed values: must have at least side and code values
-    if (!tab || !SymbolText || !paymentMethod || !odrOrderQtty || !odrOrderPrice || !acctbuy || !contracust) {
+    if (!tab || !SymbolText || !paymentMethod || !odrOrderQtty || !odrOrderPrice || !orderAccount || !contracust) {
       alert("Định dạng không hợp lệ. Phải dùng: side=Chiều lệnh&code=Mã giaodịch&paymentmethod=Phương thức thanh toán&vol=Khối lượng &price=Giá&acctbuy=STK đăt lệnh&contracust=Thành viên đối ứng&contraacct=Số TK đối ứng");
       return;
     }
 
-    const normalizedTab = String(tab || "").trim().toLowerCase();
     if (normalizedTab) selectTab(normalizedTab);
 
     if (SymbolText) {
@@ -258,8 +261,8 @@
 
     setValueInput(qtty, odrOrderQtty);
     setValueInput(price, odrOrderPrice);
-    if (acct && acctbuy) {
-      setValueInput(acct, acctbuy);
+    if (acct && orderAccount) {
+      setValueInput(acct, orderAccount);
     }
     if (revAcct && contraacct) {
       setTimeout(() => {
